@@ -13,6 +13,7 @@ import (
 
 const (
 	defaultAPIVersion = 30
+	contentTypeJSON = "application/json"
 )
 
 type ClientParams struct {
@@ -120,7 +121,7 @@ func (c *Client) ListJobs(project string, params map[string]string) (ListJobsRes
 		}
 		req.URL.RawQuery = q.Encode()
 	}
-	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Accept", contentTypeJSON)
 
 	resp, err := c.http.Do(req)
 	if err != nil {
@@ -186,8 +187,8 @@ func (c *Client) RunJob(jobId string, options map[string]string) (*RunJobRespons
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Add("Accept", "application/json")
-	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Accept", contentTypeJSON)
+	req.Header.Add("Content-Type", contentTypeJSON)
 
 	resp, err := c.http.Do(req)
 	if err != nil {
@@ -234,7 +235,7 @@ func (c *Client) ExecutionInfo(id int) (*ExecutionInfoResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Accept", contentTypeJSON)
 
 	resp, err := c.http.Do(req)
 	if err != nil {
@@ -271,7 +272,7 @@ func (c *Client) ExecutionState(id int) (*ExecutionStateResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Accept", contentTypeJSON)
 
 	resp, err := c.http.Do(req)
 	if err != nil {
@@ -326,7 +327,7 @@ func (c *Client) ExecutionOutput(id int, offset string) (*ExecutionOutputRespons
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Accept", contentTypeJSON)
 
 	q := req.URL.Query()
 	q.Add("offset", offset)
