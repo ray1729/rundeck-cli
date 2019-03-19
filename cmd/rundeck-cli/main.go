@@ -42,7 +42,7 @@ func main() {
 	app.Commands = []cli.Command{
 		{
 			Name:   "list-jobs",
-			Usage:  "list the jobs that exist for a project",
+			Usage:  "List the jobs that exist for a project",
 			Action: command.ListJobs,
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -75,7 +75,7 @@ func main() {
 		},
 		{
 			Name:   "run-job",
-			Usage:  "run a job specified by ID",
+			Usage:  "Run a job specified by ID",
 			Action: command.RunJob,
 			Flags: []cli.Flag{
 				cli.StringFlag{
