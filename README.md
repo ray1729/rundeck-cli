@@ -12,10 +12,10 @@ A basic (and incomplete) command-line interface for Rundeck.
 
 ## Commands
 
-     list-jobs         list the jobs that exist for a project
+     list-jobs         List the jobs that exist for a project
      execution-output  Dump the output for the specified execution
      execution-info    Dump the execution info for the specified execution
-     run-job           run a job specified by ID
+     run-job           Run a job specified by ID
      help, h           Shows a list of commands or help for one command
 
 ## Global Options
@@ -23,8 +23,14 @@ A basic (and incomplete) command-line interface for Rundeck.
     --api-version value   Rundeck API version (default: 24) [$RUNDECK_API_VERSION]
     --server-url value    Rundeck server URL [$RUNDECK_SERVER]
     --rundeck-user value  Rundeck username [$RUNDECK_USER, $USER]
-    --help, -h            show help
-    --version, -v         print the version
+    --help, -h            Show help
+    --version, -v         Print the version
+
+## Environment
+
+As well as the variables listed under Global Options, the
+`RUNDECK_PASSWORD` environment variable is required to specify the
+login password.
 
 ## Author
 
