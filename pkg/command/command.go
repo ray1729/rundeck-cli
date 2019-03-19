@@ -54,6 +54,48 @@ func ListJobs(c *cli.Context) error {
 	return nil
 }
 
+func ExecutionOutput(c *cli.Context) error {
+	executionId := c.Int("execution")
+	if executionId == 0 {
+		return cli.NewExitError("execution is required", 3)
+	}
+
+	rd, err := initClient(c)
+	if err != nil {
+		return err
+	}
+
+	res, err := rd.ExecutionOutput(executionId, "0")
+	if err != nil {
+		return err
+	}
+
+	dumpJSON(res)
+
+	return nil
+}
+
+func ExecutionInfo(c *cli.Context) error {
+	executionId := c.Int("execution")
+	if executionId == 0 {
+		return cli.NewExitError("execution is required", 3)
+	}
+
+	rd, err := initClient(c)
+	if err != nil {
+		return err
+	}
+
+	res, err := rd.ExecutionInfo(executionId)
+	if err != nil {
+		return err
+	}
+
+	dumpJSON(res)
+
+	return nil
+}
+
 func RunJob(c *cli.Context) error {
 	jobId := c.String("id")
 	if len(jobId) == 0 {
@@ -97,10 +139,25 @@ func RunJob(c *cli.Context) error {
 }
 
 func tailOutput(rd *rundeck.Client, executionId int) error {
-	_, err := rd.ExecutionOutput(executionId, 0)
 
+	offset := "0"
 
-	return err
+	for {
+		out, err := rd.ExecutionOutput(executionId, offset)
+		if err != nil {
+			return err
+		}
+		for _, e := range out.Entries {
+			fmt.Println(e.Time + " " + e.Log)
+		}
+		if out.ExecCompleted {
+			break
+		}
+		offset = out.Offset
+		time.Sleep(2 * time.Second)
+	}
+
+	return nil
 }
 
 func awaitCompletion(rd *rundeck.Client, executionId int) error {
@@ -115,12 +172,11 @@ func awaitCompletion(rd *rundeck.Client, executionId int) error {
 		if state.Completed {
 			break
 		}
-		rd.ExecutionOutput(executionId, 0)
 		secs := math.Exp2(n)
 		if secs > 30 {
 			secs = 30
 		}
-		time.Sleep(time.Duration(secs)*time.Second)
+		time.Sleep(time.Duration(secs) * time.Second)
 		n++
 	}
 

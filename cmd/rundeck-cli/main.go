@@ -52,12 +52,34 @@ func main() {
 			},
 		},
 		{
+			Name:   "execution-output",
+			Usage:  "Dump the output for the specified execution",
+			Action: command.ExecutionOutput,
+			Flags: []cli.Flag{
+				cli.IntFlag{
+					Name: "execution",
+					Usage: "execution id",
+				},
+			},
+		},
+		{
+			Name:   "execution-info",
+			Usage:  "Dump the execution info for the specified execution",
+			Action: command.ExecutionInfo,
+			Flags: []cli.Flag{
+				cli.IntFlag{
+					Name: "execution",
+					Usage: "execution id",
+				},
+			},
+		},
+		{
 			Name:   "run-job",
 			Usage:  "run a job specified by ID",
 			Action: command.RunJob,
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name: "id",
+					Name:  "id",
 					Usage: "job ID",
 				},
 				cli.BoolFlag{
@@ -65,7 +87,7 @@ func main() {
 					Usage: "wait for job to complete and show status",
 				},
 				cli.BoolFlag{
-					Name: "tail",
+					Name:  "tail",
 					Usage: "tail job output (implies --wait)",
 				},
 			},

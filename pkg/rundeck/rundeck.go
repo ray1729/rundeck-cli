@@ -9,7 +9,6 @@ import (
 	"net/http/cookiejar"
 	"net/url"
 	"strings"
-	"time"
 )
 
 const (
@@ -297,35 +296,47 @@ func (c *Client) ExecutionState(id int) (*ExecutionStateResponse, error) {
 	return &result, nil
 }
 
-type ExecutionOutputResponse struct {}
+type ExecutionOutputResponse struct {
+	Id             string  `json:"id"`
+	Offset         string  `json:"offset"`
+	Completed      bool    `json:"completed"`
+	ExecCompleted  bool    `json:"execCompleted"`
+	HasFailedNodes bool    `json:"hasFailedNodes"`
+	ExecState      string  `json:"execState"`
+	LastModified   string  `json:"lastModified"`
+	ExecDuration   int     `json:"execDuration"`
+	PercentLoaded  float32 `json:"percentLoaded"`
+	TotalSize      int     `json:"totalSize"`
+	RetryBackoff   int     `json:"retryBackoff"`
+	ClusterExec    bool    `json:"clusterExec"`
+	Compacted      bool    `json:"compacted"`
+	Entries        []struct {
+		Time         string `json:"time"`
+		AbsoluteTime string `json:"absolute_time"`
+		Log          string `json:"log"`
+		Level        string `json:"level"`
+		User         string `json:"user"`
+		StepCtx      string `json:"stepctx"`
+		Node         string `json:"node"`
+	} `json:"entries"`
+}
 
-func (c *Client) ExecutionOutput(id int, offset int) (*ExecutionOutputResponse, error) {
+func (c *Client) ExecutionOutput(id int, offset string) (*ExecutionOutputResponse, error) {
 	req, err := http.NewRequest("GET", c.ApiUrl("execution", fmt.Sprintf("%d", id), "output"), nil)
 	if err != nil {
 		return nil, err
 	}
-	//req.Header.Add("Accept", "applicaton/json")
+	req.Header.Add("Accept", "application/json")
 
-	if offset > 0 {
-		q := req.URL.Query()
-		q.Add("offset", fmt.Sprintf("%d", offset))
-		req.URL.RawQuery = q.Encode()
-	}
-
-	fmt.Println(req.URL.String())
+	q := req.URL.Query()
+	q.Add("offset", offset)
+	req.URL.RawQuery = q.Encode()
 
 	resp, err := c.http.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
-
-	fmt.Println(resp.Status)
-
-	if resp.StatusCode == http.StatusNotFound {
-		time.Sleep(500*time.Millisecond)
-		return c.ExecutionOutput(id, offset)
-	}
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("ExecutionOutput returned HTTP status %s", resp.Status)
@@ -339,8 +350,6 @@ func (c *Client) ExecutionOutput(id int, offset int) (*ExecutionOutputResponse, 
 	if err = errorResponse(body); err != nil {
 		return nil, fmt.Errorf("ExecutonOutput failed: %v", err)
 	}
-
-	fmt.Println(string(body))
 
 	var result ExecutionOutputResponse
 	err = json.Unmarshal(body, &result)
